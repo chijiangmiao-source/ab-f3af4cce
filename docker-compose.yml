@@ -1,0 +1,40 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: cable-audit:latest
+    container_name: cable-audit-web
+    environment:
+      # 容器内监听端口（一般无需修改）
+      PORT: "8080"
+    ports:
+      # 可配置宿主机端口：HOST_PORT=9090 docker compose up -d
+      - "${HOST_PORT:-8080}:8080"
+    healthcheck:
+      test: ["CMD", "python3", "-c",
+        "import urllib.request,sys; r=urllib.request.urlopen('http://127.0.0.1:8080/healthz',timeout=3); sys.exit(0 if r.status==200 else 1)"]
+      interval: 3s
+      timeout: 3s
+      retries: 10
+      start_period: 3s
+    restart: unless-stopped
+
+  # 一次性验收服务：
+  #   docker compose run --rm verify      （或 docker compose up verify）
+  # 复现登记/冲突/撤回恢复场景，运行代码测试与构建产物检查，
+  # 对页面及健康状态完成 HTTP 冒烟后退出，以退出码报告验收结果。
+  verify:
+    image: cable-audit:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cable-audit-verify
+    command: ["python3", "tools/verify.py"]
+    environment:
+      BASE_URL: "http://web:8080"
+      HEALTH_TIMEOUT: "30"
+    depends_on:
+      web:
+        condition: service_healthy
+    restart: "no"

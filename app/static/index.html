@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>深海观测缆 · 站间偏移检修台</title>
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<header>
+  <h1>深海观测缆 · 站间偏移检修台</h1>
+  <p class="sub">
+    依次登记 / 撤回形如 <code>x_v − x_u = d</code> 的站间整数偏移关系，
+    在检查点确认当时仍活动的读数能否共同成立。
+  </p>
+</header>
+
+<main>
+  <section class="panel">
+    <div class="panel-head">
+      <h2>① 站点清单 <span class="hint">（最多 64 个，逗号或空白分隔）</span></h2>
+      <span id="station-count" class="counter">0 / 64</span>
+    </div>
+    <textarea id="stations" rows="2" spellcheck="false"
+      placeholder="例如：A, B, C"></textarea>
+  </section>
+
+  <section class="panel">
+    <div class="panel-head">
+      <h2>② 检修脚本 <span class="hint">（最多 180 行）</span></h2>
+      <div class="head-actions">
+        <span id="line-count" class="counter">0 / 180</span>
+        <button type="button" id="btn-example" class="btn ghost">载入示例</button>
+      </div>
+    </div>
+    <textarea id="script" rows="16" spellcheck="false"
+      placeholder="REG 标识 起点 终点 整数   登记 x_终点 − x_起点 = 整数&#10;DEL 标识                   撤回关系&#10;CHECK                     检查点&#10;# 开头为注释"></textarea>
+    <div class="row">
+      <button type="button" id="btn-run" class="btn primary">提交检查点审计</button>
+      <button type="button" id="btn-clear" class="btn ghost">清空</button>
+      <span id="status" class="status" aria-live="polite"></span>
+    </div>
+  </section>
+
+  <section id="errors-box" class="panel errors hidden">
+    <h2>输入校验未通过 —— 未产出审计结论，旧审计结果已清除</h2>
+    <ul id="errors"></ul>
+  </section>
+
+  <section id="results" class="results" aria-live="polite"></section>
+</main>
+
+<footer>
+  <span>语法：<code>REG r1 A B 5</code>（B−A=5，即 A→B=5）·
+  <code>DEL r1</code> · <code>CHECK</code>；中文别名：登记 / 撤回 / 检查点</span>
+</footer>
+
+<script src="/app.js"></script>
+</body>
+</html>
